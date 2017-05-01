@@ -47,7 +47,7 @@ def balanced_subsample(y):
     examples in each class. Size of the subsample is equal to the number of
     examples in the smallest class.
 
-    :param y: numpy vector of class labels for consecutive examples
+    :param y: pandas series of class labels for consecutive examples
     :returns: list of indices of examples to choose
     """
     subsample = []
@@ -77,7 +77,7 @@ def select_classes(y, classes):
     """
     Select indices of examples from specified classes.
 
-    :param y: numpy vector of class labels for consecutive examples
+    :param y: pandas series of class labels for consecutive examples
     :param classes: list of class labels to select
     :returns: list of indices of selected examples
     """
