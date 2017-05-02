@@ -36,9 +36,9 @@ model.add(Dropout(0.5))
 model.add(Dense(10, activation='softmax'))
 
 epochs = 50
-lrate = 0.1
+lrate = 0.02
 decay = lrate/epochs
-sgd = SGD(lr=lrate, momentum=0.95, decay=decay, nesterov=False)
+sgd = SGD(lr=lrate, momentum=0.9, decay=decay, nesterov=False)
 model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
 print(model.summary())
 
