@@ -14,7 +14,7 @@ def load_dataset(path, gray=False):
     """
     train_data = sio.loadmat(path)
     x_train = train_data['X']
-    y_train = train_data['y']
+    y_train = train_data['y']%10
     x_train = np.transpose(x_train, (3, 0, 1, 2))
     if not gray:
         x_train = x_train.astype(np.float32)
