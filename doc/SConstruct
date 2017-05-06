@@ -1,0 +1,8 @@
+# -*- mode: Python; -*-
+import os
+import SCons.Builder
+
+env = Environment(ENV=os.environ)
+outpdf = env.PDF(target = 'snr_report.pdf', source='snr_report.tex')
+
+env.Clean('.','.sconsign.dblite')
