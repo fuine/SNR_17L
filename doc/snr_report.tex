@@ -26,7 +26,7 @@ Niniejszy raport przedstawia wyniki prac w ramach projektu z przedmiotu Sztuczne
 
 Dane wykorzystane w danym projekcie są rzeczywistymi danymi, które pochodzą z obrazów Google Street View \cite{dane}. Na obrazach są widoczne tabliczki z numerami budynków. Wykorzystaliśmy zbiór po wstępnej obróbce, która polegała na znalezieniu na zdjęciach obszarów, na których widoczne są przede wszystkim cyfry składające się na numer budynku, których szerokość i wysokość są większe niż połowa szerokości i wysokości analizowanych zdjęć.
 
-Każde ze zdjęć jest kolorowe oraz składa się z 32x32 pikseli. Do każdego ze zdjęć jest przyporządkowana etykieta, która ozacza cyfrę widoczną na zdjęciu (od 0 do 9). Wykorzystaliśmy dwa dostępne zbiory:
+Każde ze zdjęć jest kolorowe oraz składa się z 32x32 pikseli. Do każdego ze zdjęć jest przyporządkowana etykieta, która oznacza cyfrę widoczną na zdjęciu (od 0 do 9). Wykorzystaliśmy dwa dostępne zbiory:
 
 \begin{itemize}
 \item zbiór trenujący, który składa się z 73257 zdjęć cyfr,
@@ -80,23 +80,25 @@ Zdefiniowaliśmy sieć neuronową składającą się z 12 warstw ukrytych (w tym
 
 Jako funkcję aktywacji neuronów użyto funkcję ReLU: $a(x) = \max(0, x)$. Wartość normy wag została ograniczona do $3$. W warstwie wyjściowej zastosowano funkcję \textit{softmax}: $\sigma(z)_j=\frac{\exp{z_j}}{\sum_k \exp(z_k)}$.
 
-Do optymalizacji sieci neuronowej wybrano algorytm stochastycznego spadku gradientu z parametrami momentum:$0.9$, decay:$0.0004$, learning rate:$0.04$. Optymalizację przeprowadzano przez 100 epok, gradient obliczano na podsatwie 128 zdjęć ze zbioru trenującego. Zastosowano funkcję celu, entropia krzyżowa: $y\log a + (1-y)\log(1-a)$, gdzie $a$ to wartość wyjścia a $y$ to oczekiwana wartość wyjścia.
+Do optymalizacji sieci neuronowej wybrano algorytm stochastycznego spadku gradientu z parametrami momentum:$0.9$, decay:$0.0004$, learning rate:$0.04$. Optymalizację przeprowadzano przez 100 epok, gradient obliczano na podstawie 128 zdjęć ze zbioru trenującego. Zastosowano funkcję celu, entropia krzyżowa: $y\log a + (1-y)\log(1-a)$, gdzie $a$ to wartość wyjścia a $y$ to oczekiwana wartość wyjścia.
 
-Dodatkowym problemem badawczym było przeanalizowanie wyników walidacji powyższej sieci neuronowej z usuniętymi warstwami \textit{dropout}. Warstwa \textit{dropout}, to warstwa, która nie bierze pod uwagę niektóre (losowe) wyjścua neuronów warstwy poprzedzającej.
+Dodatkowym problemem badawczym było przeanalizowanie wyników walidacji powyższej sieci neuronowej w zależności od warstwy \textit{dropout}. Warstwa \textit{dropout}, to warstwa, która nie bierze pod uwagę niektóre (losowe) wyjścia neuronów warstwy poprzedzającej. Analizowaliśmy jakość klasyfikacji bez warstwy \textit{dropout}, z warstwą \textit{dropout} tak jak w powyższej sieci (ten przypadek będzie nazywany dużym \textit{dropout'em}) oraz z warstwą \textit{dropout} o współczynnikach mniejszych o połowę, czyli usnięcie $10\%$ neuronów po warstwach konwolucyjnych oraz $25\%$ neuronów po warstwie dense (ten przypadek będzie nazywany małym \textit{dropout'em}).
 
 \section{Wyniki}
 
-Na wykresach \ref{acc_no_dropout} i \ref{acc_dropout} przedstawiono dokładność klasyfikacji cyfr ze zdjęć Google Street View w czasie uczenia się sieci neuronowej (bez i z \textit{dropout'em}) przez 100 epok. Dokładność klasyfikacji była liczona na dwóch zbiorach: na zbiorze trenującym oraz na zbiorze testowym, który nie był używany w procesie uczenia się sieci.
+Na wykresach \ref{acc_no_dropout}, \ref{acc_half_dropout} i \ref{acc_dropout} przedstawiono dokładność klasyfikacji cyfr ze zdjęć Google Street View w czasie uczenia się sieci neuronowej (bez \textit{dropout'em}, z małym \textit{dropout'em} i z dużym \textit{dropout'em}) przez 100 epok. Dokładność klasyfikacji była liczona na dwóch zbiorach: na zbiorze trenującym oraz na zbiorze testowym, który nie był używany w procesie uczenia się sieci.
 
 Na wykresie \ref{acc_no_dropout} widzimy, że dokładność na zbiorze trenującym już po 20 epokach wynosi około $99.9\%$, natomiast na zbiorze testującym dokładność po około 6 epokach stabilizuje się na poziomie około $89.8\%$.
 
 Na wykresie \ref{acc_dropout} można zaobserwować, jak dodanie do sieci warstw typu \textit{dropout} wpływa na jakość klasyfikacji. Osiągnięta po 100 epokach dokładność klasyfikacji cyfr mierzona na zbiorze trenującym jest mniejsza niż w poprzednim przypadku ($99.9\%$) i wynosi około $97.5\%$ (przy czym po 100 epokach wciąż wykazuje mały wzrost, więc być może po większej liczbie epok ta dokładność byłaby większa). Jednakże dla sieci z \textit{dropout'em} dokładność na zbiorze testującym jest wyższa niż dla poprzedniego przypadku ($89.8\%$) i wynosi około $92.8\%$ po 100 epokach. Jest to wynik podobny do wyniku opisanego w pracy referencyjnej \cite{reference-paper} (lepsze wyniki -- około $96\%$ dokładności --uzyskano dla sieci jedenastowarstwowej).
 
+Dla mniejszego \textit{droput'u} (wykres \ref{acc_half_dropout}) osiągnięto lepszą dokładność ($91.3\%$) niż bez warstwy \textit{dropout}, ale mniej niż dla sieci z większym \textit{dropout'em.} 
+
 Dodanie warstw \textit{dropout} do naszej sieci neuronowej dało lepszą dokładność klasyfikacji na zbiorze testowym i gorszą dokładność na zbiorze trenującym, co oznacza, że warstwa \textit{dropout} skutecznie walczy z nadmiernym dopasowaniem się do zbioru trenującego i pozwala uzyskać lepszą generalizacje.
 
-Na wykresach \ref{loss_no_dropout} i \ref{loss_dropout} przedstawiono wartość funkcji celu w czasie uczenia się sieci neuronowej. Dla sieci bez wartswy \textit{dropout} funckja celu na zbiorze trenującym osiąga minimum (zero) już po około 20 epokach, lecz niestety na zbiorze testującym wartość funkcji celu odbija się od wartości $0.4$ po około 5 epokach i następnie rośnie, by ustabilizować się na poziomie około $0.9$ po 30 epokach. W przeciwieństwie do tej sieci, sieć z warstwami \textit{dropout} lepiej minimalizuje funkcję celu, nie obserwujemy też odbicia dużego odbicia się wartości funkcji celu. Po 100 epokach wartość funkcji celu mierzona na zbiorze testującym wynosi około $0.35$.
+Na wykresach \ref{loss_no_dropout}, \ref{loss_half_dropout} i \ref{loss_dropout} przedstawiono wartość funkcji celu w czasie uczenia się sieci neuronowej. Dla sieci bez warstwy \textit{dropout} funckja celu na zbiorze trenującym osiąga minimum (zero) już po około 20 epokach, lecz niestety na zbiorze testującym wartość funkcji celu odbija się od wartości $0.4$ po około 5 epokach i następnie rośnie, by ustabilizować się na poziomie około $0.9$ po 30 epokach. W przeciwieństwie do tej sieci, sieci z warstwami \textit{dropout} lepiej minimalizują funkcję celu, nie obserwujemy też odbicia dużego odbicia się wartości funkcji celu (trochę większe odbicie jest dla sieci z mniejszym \textit{dropout'em}). Po 100 epokach wartość funkcji celu mierzona na zbiorze testującym wynosi około $0.55$ dla sieci z małym \textit{dropout'em} i około $0.35$ dla sieci z dużym \textit{dropout'em}.
 
-Porównując wykresy \ref{loss_no_dropout} i \ref{loss_dropout} wnioskujemy, że zastosowanie warstwy \textit{dropout} pozwoliło uniknąć nadmiernego dopasowania do zbioru trenującego i dzięki temu udało się osiągnąć lepsze minimum na zbiorze testującym.
+Porównując wykresy \ref{loss_no_dropout}, \ref{loss_half_dropout} i \ref{loss_dropout} wnioskujemy, że zastosowanie warstwy \textit{dropout} pozwoliło uniknąć nadmiernego dopasowania do zbioru trenującego i dzięki temu udało się osiągnąć lepsze minimum na zbiorze testującym.
 
 
 \begin{figure}[!ht]
@@ -106,10 +108,18 @@ Porównując wykresy \ref{loss_no_dropout} i \ref{loss_dropout} wnioskujemy, że
 \label{acc_no_dropout}
 \end{figure}
 
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.25]{acc_half_dropout}
+\caption{Dokładność klasyfikacji dla sieci neuronowej z małym \textit{dropout'em}.}
+\label{acc_half_dropout}
+\end{figure}
+
 \begin{figure}[!ht]
 \centering
 \includegraphics[scale=0.25]{acc_dropout}
-\caption{Dokładność klasyfikacji dla sieci neuronowej z \textit{dropout'em}.}
+\caption{Dokładność klasyfikacji dla sieci neuronowej z dużym \textit{dropout'em}.}
 \label{acc_dropout}
 \end{figure}
 
@@ -122,8 +132,16 @@ Porównując wykresy \ref{loss_no_dropout} i \ref{loss_dropout} wnioskujemy, że
 
 \begin{figure}[!ht]
 \centering
+\includegraphics[scale=0.25]{loss_half_dropout}
+\caption{Funkcja celu dla głębokiej sieci neuronowej z małym \textit{dropout'em}.}
+\label{loss_dropout}
+\end{figure}
+
+
+\begin{figure}[!ht]
+\centering
 \includegraphics[scale=0.25]{loss_dropout}
-\caption{Funkcja celu dla głębokiej sieci neuronowej z \textit{dropout'em}.}
+\caption{Funkcja celu dla głębokiej sieci neuronowej z dużym \textit{dropout'em}.}
 \label{loss_dropout}
 \end{figure}
 
