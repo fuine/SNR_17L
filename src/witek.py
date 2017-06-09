@@ -1,3 +1,6 @@
+import os
+os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cuda0,floatX=float32"
+
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
@@ -27,16 +30,16 @@ y_test = to_categorical(y_test, 10)
 
 model = Sequential()
 model.add(Conv2D(32, (3, 3), input_shape=(32, 32, 1), padding='valid', activation='relu', kernel_constraint=maxnorm(3)))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 model.add(Conv2D(32, (3, 3), activation='relu', padding='valid', kernel_constraint=maxnorm(3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(32, (3, 3), input_shape=(32, 32, 1), padding='valid', activation='relu', kernel_constraint=maxnorm(3)))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 model.add(Conv2D(32, (3, 3), activation='relu', padding='valid', kernel_constraint=maxnorm(3)))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 model.add(Dense(512, activation='relu', kernel_constraint=maxnorm(3)))
-model.add(Dropout(0.5))
+model.add(Dropout(0.8))
 model.add(Dense(10, activation='softmax'))
 
 epochs = 100
